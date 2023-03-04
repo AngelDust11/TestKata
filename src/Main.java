@@ -1,30 +1,30 @@
 import java.util.Objects;
 import java.util.Scanner;
 public class Main {
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws Exception {
 
         Scanner in = new Scanner(System.in);
         String input = in.nextLine();
         String res = calc(input);
         System.out.printf("%s", res);
+
     }
 
-    public static String calc(String input) {
+    public static String calc(String input) throws Exception {
         String[] oper = input.split(" ");
         if (oper.length > 3){
-            return "throws Exception";
+            throw new Exception("формат математической операции не удовлетворяет заданию - два операнда и один оператор");
         }
 
         if ((oper[1].length() != 1) || (oper[1].matches("[^-+*/]"))) {
-            return "throws Exception";
+            throw new Exception("Неверный операнд допустимы только (+, -, /, *)");
         }
 
         if ((oper[0].matches("\\d+") && oper[2].matches("\\d+"))) {
             int op1 = Integer.parseInt(oper[0]);
             int op2 = Integer.parseInt(oper[2]);
             if (op1 > 10 || op2 > 10 ) {
-                return "throws Exception";
+                throw new Exception("Не поддерживаются числа больше 10");
             }
             int res;
 
@@ -37,7 +37,7 @@ public class Main {
             } else if (Objects.equals(oper[1], "/")) {
                 res = op1 / op2;
             } else {
-                return "throws Exception";
+                throw new Exception("Неверный операнд допустимы только (+, -, /, *)");
             }
 
             return Integer.toString(res);
@@ -46,7 +46,10 @@ public class Main {
             int op1 = RimInArab(oper[0]);
             int op2 = RimInArab(oper[2]);
             if (op1 > 10 || op2 > 10 ) {
-                return "throws Exception";
+                throw new Exception("Не поддерживаются числа больше 10");
+            }
+            if (op1 == 0 || op2 == 0) {
+                throw new Exception("Введены неверные римские числа, допустимы от I - X");
             }
             int arabres;
             if (Objects.equals(oper[1], "+")) {
@@ -57,15 +60,17 @@ public class Main {
                 arabres = op1 - op2;
             } else if (Objects.equals(oper[1], "/")) {
                 arabres = op1 / op2;
-                System.out.printf("%d", arabres);
             } else {
-                return "throws Exception";
+                throw new Exception("Неверный операнд допустимы только (+, -, /, *)");
+            }
+            if (arabres <= 0) {
+                throw new Exception("В римской системе нет отрицательных чисел и нуля");
             }
             String res = ArabToRim(arabres);
-            return res;
 
+            return res;
         }
-        return "throws Exception";
+        throw new Exception("Неверный формат");
     }
     public static String ArabToRim (int arab) {
         String res = "";
@@ -73,9 +78,17 @@ public class Main {
             res = "C";
             return res;
         }
+        if (arab > 90 ) {
+            res = "IX";
+            arab = arab - 90;
+        }
         if (arab > 50 ) {
             res = "L";
             arab = arab - 50;
+        }
+        if (arab > 40) {
+            res = "XL";
+            arab = arab - 40;
         }
         if (arab >= 10 ) {
             for (;arab >= 10; arab = arab - 10) {
